@@ -17,6 +17,15 @@ export default defineConfig({
             formVariants: true,
         }),
     ],
+    server: {
+        host: 'tfi-hotelbooking.local',
+        port: 5173,
+        hmr: {
+            host: 'tfi-hotelbooking.local',
+        },
+        cors: true,
+    },
+    
     esbuild: {
         jsx: 'automatic',
     },

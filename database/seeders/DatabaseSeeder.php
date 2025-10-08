@@ -8,6 +8,9 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
+use App\Models\RoomType;
+use App\Models\Room;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -18,12 +21,14 @@ class DatabaseSeeder extends Seeder
         // Create roles if not exist
         $superAdminRole = Role::firstOrCreate(['name' => 'super admin']);
         $staffAdminRole = Role::firstOrCreate(['name' => 'staff admin']);
+        $clientRole = Role::firstOrCreate(['name' => 'client']);
 
         // Create a super admin user
         $superAdmin = User::firstOrCreate(
             ['email' => 'superadmin@example.com'],
             [
-                'name' => 'Super Admin',
+                'first_name' => 'Super',
+                'last_name' => 'Admin',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
@@ -34,7 +39,8 @@ class DatabaseSeeder extends Seeder
         $staffAdmin = User::firstOrCreate(
             ['email' => 'staffadmin@example.com'],
             [
-                'name' => 'Staff Admin',
+                'first_name' => 'Staff',
+                'last_name' => 'Admin',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
@@ -42,13 +48,38 @@ class DatabaseSeeder extends Seeder
         $staffAdmin->assignRole($staffAdminRole);
 
         // Create a test user without roles
-        User::firstOrCreate(
+        $client = User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
-                'name' => 'Test User',
+                'first_name' => 'Test',
+                'last_name' => 'User',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
         );
+        $client->assignRole($clientRole);
+
+        $types = ['Deluxe', 'Standard', 'Suite', 'Family', 'Single'];
+
+        foreach ($types as $type) {
+            RoomType::firstOrCreate(['name' => $type]);
+        }
+
+
+        // Example rooms with room numbers
+        $rooms = ['101', '102', '103', '104', '105'];
+
+        // Assign rooms to the first RoomType (for demo)
+        $roomType = RoomType::first();
+
+        foreach ($rooms as $room) {
+            Room::firstOrCreate([
+                'room_number' => $room,
+                'room_type_id' => $roomType->id, // assign to a room type
+                'status' => 'available',
+                'price' => 1000, // example price
+                'capacity' => 2, // example capacity
+            ]);
+        }
     }
 }

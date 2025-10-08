@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, router,Link } from '@inertiajs/react';
-import { ArrowUpDown, Eye, MoreHorizontal } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState, } from "@tanstack/react-table"
 import Heading from '@/components/heading';
@@ -13,27 +13,24 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-  DropdownMenuItem
 } from "@/components/ui/dropdown-menu"
 import { Separator } from '@/components/ui/separator';
-import { Room, RoomType } from '@/types/room';
+import { RoomType } from '@/types/room';
 import CustomTable from '@/components/table/custom-table';
-import roomRoutes from '@/routes/rooms';
-
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    title: 'Rooms',
-    href: '/rooms',
+    title: 'Room Types',
+    href: '/roomtypes',
   },
 ];
 
 type Props = {
-  rooms: Room[];
+  roomtypes: RoomType[];
 }
 
 
-export const columns: ColumnDef<Room>[] = [
+export const columns: ColumnDef<RoomType>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -57,56 +54,7 @@ export const columns: ColumnDef<Room>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "image",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Image
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const imageUrl = row.getValue("image") as string | null;
-      const roomId = row.original.id;
-      return (
-        <div className="flex items-center justify-center">
-          <Link
-            href={roomRoutes.show.url(roomId)} // ✅ go to show page
-            className="block hover:opacity-80 transition"
-          >
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="Room"
-                className="w-16 h-16 object-cover rounded-md border"
-              />
-            ) : (
-              <span className="text-gray-400 text-sm italic">No image</span>
-            )}
-          </Link>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "room_number",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Room Number
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="">{row.getValue("room_number")}</div>,
-  },
-  {
-    accessorKey: "room_type_name",
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
@@ -118,57 +66,43 @@ export const columns: ColumnDef<Room>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("room_type_name")}</div>,
+    cell: ({ row }) => <div className="">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "capacity",
+    accessorKey: "rooms_count",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Capacity
+          Total Rooms
           <ArrowUpDown />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("capacity")}</div>,
+    cell: ({ row }) => <div className="lowercase">{row.getValue("rooms_count")}</div>,
   },
   {
-    accessorKey: "price",
+    accessorKey: "room_available_count",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Price
+          Total Available
           <ArrowUpDown />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("price")}</div>,
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Status
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("status")}</div>,
+    cell: ({ row }) => <div className="lowercase">{row.getValue("room_available_count")}</div>,
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
+      const payment = row.original
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -179,14 +113,6 @@ export const columns: ColumnDef<Room>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>              
-              <Link
-                href={roomRoutes.show.url(row.original.id)}
-                className="flex items-center gap-2"
-              >
-                <Eye className="h-4 w-4" />
-                View
-              </Link></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -194,7 +120,7 @@ export const columns: ColumnDef<Room>[] = [
   },
 ]
 
-const RoomIndex = ({rooms}: Props) => {
+const RoomIndex = ({roomtypes}: Props) => {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -206,7 +132,7 @@ const RoomIndex = ({rooms}: Props) => {
     pageSize: 100, // default 100
   })
   const table = useReactTable({
-    data: rooms ?? [],
+    data: roomtypes ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -230,7 +156,10 @@ const RoomIndex = ({rooms}: Props) => {
   })
 
 
-  const handleAddRoom = () => {    
+  const handleAddRoom = () => {
+    // Navigate to the room creation page
+    // You can use Inertia's router or any other method to navigate
+    
     router.visit('/rooms/create');
   }
 
@@ -239,7 +168,7 @@ const RoomIndex = ({rooms}: Props) => {
       <Head title="Room Types" />
       <Toaster position='top-center' />
 
-      <Heading title="Room Management" description="Create new rooms, view details, and update existing records with ease." />
+      <Heading title="Room Type Management" description="Create new room types, view details, and update existing records with ease." />
 
       <Separator className='my-4' />
 

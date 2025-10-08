@@ -13,16 +13,12 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bed, BookOpen, BookUser, Calendar, Folder, Image, LayoutGrid, Settings, UserRound, Users } from 'lucide-react';
+import { Bed, BookOpen, BookUser, Calendar, Folder, Image, Layers2, LayoutGrid, Settings, UserRound, Users } from 'lucide-react';
 import AppLogo from './app-logo';
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+import roomTypes from '@/routes/room-types';
+import rooms from '@/routes/rooms';
+import users from '@/routes/users';
+import bookings from '@/routes/bookings';
 
 export function AppSidebar() {
 
@@ -32,11 +28,11 @@ export function AppSidebar() {
     // Define all possible items
     const allNavItems: NavItem[] = [
         { title: 'Dashboard', href: dashboard(), icon: LayoutGrid },
-        { title: 'Room', href: '/rooms', icon: Bed },
-        { title: 'Bookings', href: '/bookings', icon: Calendar },
-        { title: 'Gallery', href: '/bookings', icon: Image },
-        { title: 'Guest', href: '/users', icon: BookUser, role: 'super admin' },
-        { title: 'Users', href: '/users', icon: Users, role: 'super admin' },
+        { title: 'Room Types', href: roomTypes.index(), icon: Layers2 },
+        { title: 'Room', href: rooms.index(), icon: Bed },
+        { title: 'Bookings', href: bookings.index(), icon: Calendar },
+        { title: 'Gallery', href: '/gallery', icon: Image },
+        { title: 'Users', href: users.index(), icon: Users, role: 'super admin' },
     ];
 
     // Filter items based on role

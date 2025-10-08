@@ -12,9 +12,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('rooms', function () {
-        return Inertia::render('admin/rooms/index');
-    })->name('rooms.index');
+    Route::resource('room-types', App\Http\Controllers\RoomTypeController::class)->names('room-types');
+
+    Route::resource('rooms', App\Http\Controllers\RoomController::class)->names('rooms');
+
+    Route::resource('users', App\Http\Controllers\UserController::class)->names('users');
+
+    Route::resource('bookings', App\Http\Controllers\BookingController::class)->names('bookings');
 });
 
 require __DIR__.'/settings.php';
