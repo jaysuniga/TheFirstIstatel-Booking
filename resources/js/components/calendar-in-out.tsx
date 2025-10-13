@@ -1,10 +1,9 @@
-"use client"
-
 import * as React from "react"
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar"
-import { DateRange } from "react-day-picker"
+import { CalendarDay, DateRange } from "react-day-picker"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -13,6 +12,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { format, parseISO } from "date-fns"
+import { Calendar1, CalendarArrowUp, CalendarDays } from "lucide-react"
+import { Label } from '@/components/ui/label';
+
 
 interface BookingDatePickerProps {
   defaultFrom?: string | null
@@ -30,75 +32,74 @@ export default function BookingDatePicker({
     to: defaultTo ? parseISO(defaultTo) : undefined,
   })
   const [open, setOpen] = React.useState(false)
-  const [clickCount, setClickCount] = React.useState(0)
 
-  const formatDate = (date: Date | undefined) =>
-    date ? format(date, "yyyy-MM-dd") : ""
 
-  const handleSelectDate = (selected: DateRange | undefined) => {
-    if (!selected?.from) return
+  const formatDate = (date: Date | undefined) => 
+    date ? format(date, "d MMMM") : "";  // Formats to "13 October"
 
-    // First click → reset
-    if (clickCount === 0) {
-      setRange({ from: undefined, to: undefined })
-      setClickCount(1)
-    } else if (clickCount === 1) {
-      setRange({ from: selected.from, to: undefined })
-      setClickCount(2)
-    } else if (clickCount === 2) {
-      if (selected.from > selected.to!) {
-        // Swap if user clicked before "from"
-        setRange({ from: selected.to, to: selected.from })
-        onChange?.(
-          formatDate(selected.to),
-          formatDate(selected.from)
-        )
-      } else {
-        setRange({ from: selected.from, to: selected.to })
-        onChange?.(
-          formatDate(selected.from),
-          formatDate(selected.to)
-        )
-      }
-      setClickCount(0)
-      setOpen(false)
+  const parseToDate = (date: string | null | undefined): Date | undefined => {
+    if (date) {
+      const parsedDate = new Date(date);
+      return isNaN(parsedDate.getTime()) ? undefined : parsedDate; // Return undefined if it's an invalid date
     }
-  }
+    return undefined;
+  };
+
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-2">
-        <Input
-          readOnly
-          value={formatDate(range?.from)}
-          placeholder="Check-in"
-          onClick={() => setOpen(true)}
-        />
-        <Input
-          readOnly
-          value={formatDate(range?.to)}
-          placeholder="Check-out"
-          onClick={() => setOpen(true)}
-        />
+    <div className="flex gap-4">
+      <div 
+        className=" w-full flex items-center justify-between gap-6 px-4 bg-white rounded-md cursor-pointer border hover:border-main-accent-secondary hover:ring-1 hover:ring-main-accent-secondary/20"
+        onClick={() => setOpen(true)}
+      >
+        <div className=''>          
+          <div className='text-muted-foreground text-xs '>Check-in and Check-out</div>
+          <div className="text-md">
+            {formatDate(parseToDate(defaultFrom))} — {formatDate(parseToDate(defaultTo))}
+          </div>
+        </div>
+        <CalendarDays className="text-main-accent-secondary" />
       </div>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      
+
+      <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogTrigger asChild>
           <Button variant="outline" className="hidden">
             Select Dates
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] lg:max-w-[900px]">
+
+        <DialogContent className="sm:max-w-[600px] lg:max-w-[900px]" 
+          showCloseButton={false}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >        
           <DialogHeader>
-            <DialogTitle>Select Check-in & Check-out Dates</DialogTitle>
+            <DialogTitle className="bg-white rounded-lg p-4">Select Check-in & Check-out Dates</DialogTitle>            
           </DialogHeader>
           <Calendar
             mode="range"
             numberOfMonths={2}
             defaultMonth={range?.from}
             selected={range}
-            onSelect={handleSelectDate}
-            className="rounded-lg border shadow-sm [--cell-size:--spacing(11)] md:[--cell-size:--spacing(13)] mx-auto"
+            onSelect={(range) => {
+              setRange(range)
+
+              if (range?.from && range?.to && onChange) {
+                const formattedFrom = format(range.from, "yyyy-MM-dd")
+                const formattedTo = format(range.to, "yyyy-MM-dd")
+                onChange(formattedFrom, formattedTo)
+              }
+
+              console.log(range);
+
+              if (range?.from && range?.to && range.from.getTime() !== range.to.getTime()) {
+                setOpen(false);
+              }
+            }}
+
+            className="rounded-lg border w-full shadow-sm [--cell-size:--spacing(11)] md:[--cell-size:--spacing(8)]"
             components={{
               DayButton: ({ children, modifiers, day, ...props }) => {
                 const isWeekend =
@@ -119,7 +120,7 @@ export default function BookingDatePicker({
               },
             }}
           />
-        </DialogContent>
+        </DialogContent>        
       </Dialog>
     </div>
   )

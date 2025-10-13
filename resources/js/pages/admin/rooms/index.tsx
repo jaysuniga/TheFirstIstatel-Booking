@@ -16,7 +16,7 @@ import {
   DropdownMenuItem
 } from "@/components/ui/dropdown-menu"
 import { Separator } from '@/components/ui/separator';
-import { Room, RoomType } from '@/types/room';
+import { Room } from '@/types/room';
 import CustomTable from '@/components/table/custom-table';
 import roomRoutes from '@/routes/rooms';
 
@@ -78,7 +78,7 @@ export const columns: ColumnDef<Room>[] = [
           >
             {imageUrl ? (
               <img
-                src={imageUrl}
+                src={imageUrl?.startsWith('http') ? imageUrl : `/storage/${imageUrl}`}
                 alt="Room"
                 className="w-16 h-16 object-cover rounded-md border"
               />
@@ -91,34 +91,19 @@ export const columns: ColumnDef<Room>[] = [
     },
   },
   {
-    accessorKey: "room_number",
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Room Number
+          Room Name
           <ArrowUpDown />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="">{row.getValue("room_number")}</div>,
-  },
-  {
-    accessorKey: "room_type_name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Room Type
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("room_type_name")}</div>,
+    cell: ({ row }) => <div>{row.getValue("name")}</div>,
   },
   {
     accessorKey: "capacity",
@@ -149,21 +134,6 @@ export const columns: ColumnDef<Room>[] = [
       )
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("price")}</div>,
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Status
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("status")}</div>,
   },
   {
     id: "actions",

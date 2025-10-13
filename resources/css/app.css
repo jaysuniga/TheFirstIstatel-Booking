@@ -60,6 +60,7 @@
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-main-accent: var(--main-accent);
+    --color-main-accent-secondary: var(--main-accent-secondary);
 }
 
 :root {
@@ -97,6 +98,7 @@
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.87 0 0);
     --main-accent: oklch(0.6751 0.0708 96.3);
+    --main-accent-secondary: oklch(0.5 0.0943 40.05);
 }
 
 .dark {

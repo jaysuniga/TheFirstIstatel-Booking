@@ -14,15 +14,12 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('room_type_id')->constrained()->cascadeOnDelete();
 
-            $table->string('room_number')->unique();
+            $table->string('name')->nullable()->unique();
             $table->string('image')->nullable();
             $table->string('image_360')->nullable();
             $table->unsignedInteger('capacity')->default(1);
             $table->decimal('price', 10, 2);
-            $table->enum('status', ['available', 'occupied', 'maintenance'])->default('available');
-            $table->boolean('is_active')->default(true);
         });
     }
 

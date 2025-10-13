@@ -12,7 +12,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::resource('room-types', App\Http\Controllers\RoomTypeController::class)->names('room-types');
+    Route::resource('room-variants', App\Http\Controllers\RoomVariantController::class)->names('room-variants');
 
     Route::resource('rooms', App\Http\Controllers\RoomController::class)->names('rooms');
 

@@ -1,19 +1,18 @@
-export interface RoomType {
-  id: number;
-  name: string;
-  rooms_count?: number;
-  room_available_count?: number;
-}
-
 export interface Room {
   id: number;
-  room_number: string;
-  room_type: number;
-  room_type_name?: string;
-  status : 'available' | 'occupied' | 'maintenance';
+  name: string;
   price : number;
   capacity : number;
   image: string;
   images: string[];
   image_360:string;
+}
+
+export interface RoomVariant {
+  id: number;
+  room_number: string;
+  status: 'occupied' | 'available' | 'maintenance';
+  is_active: boolean;
+  room_id: number;
+  room_name?: string;
 }

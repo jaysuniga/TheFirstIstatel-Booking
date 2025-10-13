@@ -55,8 +55,28 @@ class BookingController extends Controller
      */
     public function create()
     {
-        // Fetch available rooms and users for selection
-        $rooms = Room::select('id', 'room_number', 'price')->get();
+        $rooms = Room::with(['fileAttachments'])
+            ->select('rooms.*')
+            ->get()
+            ->map(function ($room) {
+                // Get first non-360 image if available
+                $normalImage = $room->fileAttachments
+                    ->where('is_360', false)
+                    ->first();
+
+                    
+                // Send the original file path (whether URL or local path)
+                $imagePath = $normalImage ? $normalImage->file_path : null;
+
+                return [
+                    'id' => $room->id,
+                    'name' => $room->name,
+                    'price' => $room->price,
+                    'capacity' => $room->capacity,
+                    'image' => $imagePath,
+                ];
+            });
+        
         $users = User::select('id', 'first_name', 'last_name', 'email')->get();
 
         return inertia('admin/bookings/create', [
@@ -64,6 +84,7 @@ class BookingController extends Controller
             'users' => $users,
         ]);
     }
+
     /**
      * Store a newly created resource in storage.
      */

@@ -13,12 +13,12 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bed, BookOpen, BookUser, Calendar, Folder, Image, Layers2, LayoutGrid, Settings, UserRound, Users } from 'lucide-react';
+import { Bed, BookOpen, BookUser, Calendar, Folder, Image, Layers2, LayoutGrid, ListTree, Settings, UserRound, Users } from 'lucide-react';
 import AppLogo from './app-logo';
-import roomTypes from '@/routes/room-types';
 import rooms from '@/routes/rooms';
 import users from '@/routes/users';
 import bookings from '@/routes/bookings';
+import roomVariants from '@/routes/room-variants';
 
 export function AppSidebar() {
 
@@ -28,8 +28,8 @@ export function AppSidebar() {
     // Define all possible items
     const allNavItems: NavItem[] = [
         { title: 'Dashboard', href: dashboard(), icon: LayoutGrid },
-        { title: 'Room Types', href: roomTypes.index(), icon: Layers2 },
-        { title: 'Room', href: rooms.index(), icon: Bed },
+        { title: 'Rooms', href: rooms.index(), icon: Bed },
+        { title: 'Room Variants', href: roomVariants.index(), icon: ListTree },
         { title: 'Bookings', href: bookings.index(), icon: Calendar },
         { title: 'Gallery', href: '/gallery', icon: Image },
         { title: 'Users', href: users.index(), icon: Users, role: 'super admin' },

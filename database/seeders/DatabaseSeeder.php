@@ -59,27 +59,7 @@ class DatabaseSeeder extends Seeder
         );
         $client->assignRole($clientRole);
 
-        $types = ['Deluxe', 'Standard', 'Suite', 'Family', 'Single'];
-
-        foreach ($types as $type) {
-            RoomType::firstOrCreate(['name' => $type]);
-        }
-
-
-        // Example rooms with room numbers
-        $rooms = ['101', '102', '103', '104', '105'];
-
-        // Assign rooms to the first RoomType (for demo)
-        $roomType = RoomType::first();
-
-        foreach ($rooms as $room) {
-            Room::firstOrCreate([
-                'room_number' => $room,
-                'room_type_id' => $roomType->id, // assign to a room type
-                'status' => 'available',
-                'price' => 1000, // example price
-                'capacity' => 2, // example capacity
-            ]);
-        }
+        $this->call(RoomSeeder::class);
     }
 }
+

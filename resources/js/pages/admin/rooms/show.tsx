@@ -69,42 +69,24 @@ const RoomShow = ({ room }: Props) => {
             <div className='text-sm font-bold'>Room Details:</div>
           </div>
           <div className='px-2'>
-            <div className="grid grid-cols-4 gap-4 px-2">
-              {/*room_number*/}
+            <div className="grid grid-cols-4 gap-4 px-2">     
+              {/*name*/}
               <div className="grid gap-2">
                 <div className='flex items-center text-neutral-600 gap-2'>
-                  <PencilLine size={16} />
-                  <Label htmlFor="room_number" className='font-semibold'>Room Name</Label>
+                  <Users size={16} />
+                  <Label htmlFor="name" className='font-semibold'>Room Name</Label>
                 </div>
                 <div className='px-4'>
                   <Input
-                    id="room_number"
+                    id="name"
                     type="text"
-                    value={room.room_number}
+                    value={room.name}
                     readOnly
-                    placeholder='Enter room number here'
                     className='border border-neutral-400'
                   />
                 </div>
               </div>
-              {/*room_number*/}
-              <div className="grid gap-2">
-                <div className='flex items-center text-neutral-600 gap-2'>
-                  <Layers size={16} />
-                  <Label className='font-semibold'>Room Type</Label>
-                </div>
-                <div className='px-4'>
-                  <Input
-                    id="room_number"
-                    type="text"
-                    value={room.room_type}
-                    readOnly
-                    placeholder='Enter room number here'
-                    className='border border-neutral-400'
-                  />
-                </div>
-              </div>
-              
+
               {/*capacity*/}
               <div className="grid gap-2">
                 <div className='flex items-center text-neutral-600 gap-2'>
@@ -170,7 +152,7 @@ const RoomShow = ({ room }: Props) => {
                     room.images.map((image, index) => (
                       <CarouselItem key={index}>
                               <img
-                                src={image}
+                                src={image?.startsWith('http') ? image : `/storage/${image}`}
                                 alt={`Room image ${index + 1}`}
                                 className="w-full h-full object-cover rounded-md"
                               />

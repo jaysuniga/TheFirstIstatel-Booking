@@ -1,7 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { ArrowUpDown, ImagePlus, ImageUp, Layers, List, MoreHorizontal, PencilLine, PhilippinePeso, Rotate3D, Trash, Trash2, Users, X } from 'lucide-react';
 import * as React from "react"
-import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState, } from "@tanstack/react-table"
 import Heading from '@/components/heading';
 import { type BreadcrumbItem } from '@/types';
 import { Toaster } from '@/components/ui/sonner';
@@ -17,8 +16,6 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 import { Separator } from '@/components/ui/separator';
-import { Room, RoomType } from '@/types/room';
-import CustomTable from '@/components/table/custom-table';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import PanoramaViewer from '@/components/panorama-viewer';
@@ -39,28 +36,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 type RoomFormData = {
-  room_number: string;
-  room_type_id: number;
+  name: string;
   capacity: number;
   price: number;
-  status: string;
   images: File[];
   image_360: File;
 };
 
-type Props = {
-  rooms: Room[];
-  room_types: RoomType[];
-}
-
-const RoomCreate = ({ rooms,room_types }: Props) => {
+const RoomCreate = () => {
 
   const getDefaultRoomFormData = (): RoomFormData => ({
-    room_number: '',
-    room_type_id: 0,
+    name:'',
     capacity: 1,
     price: 0,
-    status: 'available',
     images: [],
     image_360: new File([], ''),
   });
@@ -205,57 +193,31 @@ const RoomCreate = ({ rooms,room_types }: Props) => {
       <Separator className='my-4' />
 
       <form onSubmit={handleSubmit} encType="multipart/form-data" autoComplete="off">
-        <div className='w-full space-y-8 px-2'>
+        <div className='w-full px-2'>
           <div className='flex flex-col gap-2 p-2'>
             <div className='flex items-center gap-2 mb-2'>
               <List className='text-muted-foreground' size={14} />
               <div className='text-sm font-bold'>Room Details:</div>
             </div>
             <div className='px-2'>
-              <div className="grid grid-cols-4 gap-4 px-2">
-                {/*room_number*/}
+              <div className="grid grid-cols-4 gap-6 px-2">
+                {/*name*/}
                 <div className="grid gap-2">
                   <div className='flex items-center text-neutral-600 gap-2'>
-                    <PencilLine size={16} />
-                    <Label htmlFor="room_number" className='font-semibold'>Room Name</Label>
+                    <Users size={16} />
+                    <Label htmlFor="name" className='font-semibold'>Name</Label>
                   </div>
-                  <div className='px-4'>
+                  <div>
                     <Input
-                      id="room_number"
+                      id="name"
                       type="text"
-                      value={data.room_number}
-                      onChange={(e) => setData('room_number', e.target.value)}
-                      placeholder='Enter room number here'
+                      value={data.name}
+                      onChange={(e) => setData('name', e.target.value)}
+                      placeholder='Room Name'
                       className='border border-dashed border-neutral-400'
                     />
                   </div>
-                  {errors.room_number && <p className="text-sm text-red-600">{errors.room_number}</p>}
-                </div>
-                {/*room type*/}
-                <div className="grid gap-2">
-                  <div className='flex items-center text-neutral-600 gap-2'>
-                    <Layers size={16} />
-                    <Label className='font-semibold'>Room Type</Label>
-                  </div>
-                  <div className='px-4'>
-                    <Select
-                      value={data.room_type_id === 0 ? '' : data.room_type_id.toString()}
-                      onValueChange={(value) => setData('room_type_id', Number(value))}
-                    >
-                      <SelectTrigger className='border border-dashed border-neutral-400 w-full'>
-                        <SelectValue placeholder="Room Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Room Types</SelectLabel>
-                          {room_types.map((type) => (
-                            <SelectItem key={type.id} value={type.id.toString()}>{type.name}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {errors.room_type_id && <p className="text-sm text-red-600">{errors.room_type_id}</p>}
+                  {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
                 </div>
                 
                 {/*capacity*/}
@@ -264,7 +226,7 @@ const RoomCreate = ({ rooms,room_types }: Props) => {
                     <Users size={16} />
                     <Label htmlFor="capacity" className='font-semibold'>Capacity</Label>
                   </div>
-                  <div className='px-4'>
+                  <div>
                     <Input
                       id="capacity"
                       type="number"
@@ -276,13 +238,14 @@ const RoomCreate = ({ rooms,room_types }: Props) => {
                   </div>
                   {errors.capacity && <p className="text-sm text-red-600">{errors.capacity}</p>}
                 </div>
+
                 {/*price*/}
                 <div className="grid gap-2">
                   <div className='flex items-center text-neutral-600 gap-2'>
                     <PhilippinePeso size={16} />
                     <Label htmlFor="price" className='font-semibold'>Price</Label>
                   </div>
-                  <div className='px-4'>
+                  <div>
                     <Input
                       id='price'
                       className='border border-dashed border-neutral-400'
@@ -311,18 +274,17 @@ const RoomCreate = ({ rooms,room_types }: Props) => {
 
           <Separator className='my-4' />
 
-          <div className='flex divide-x'>
-            
-            <div className="w-full flex flex-col gap-2 p-2">
+          <div className='flex flex-col md:flex-row md:divide-x'>        
+            <div className="w-full flex flex-col gap-2 px-4">
               <div className="flex items-center gap-2 mb-2">
                 <Rotate3D className="text-muted-foreground" size={14} />
                 <div className="text-sm font-bold">Room 360° Image:</div>
               </div>
 
-              <div className="h-100 w-full px-2 flex gap-6">
+              <div className="w-full px-2 flex gap-6">
                 {previewUrl ? (
                   // ✅ Show 360° preview
-                  <div className="flex justify-center items-center mx-auto relative w-150 h-full rounded-lg overflow-hidden border">
+                  <div className="flex h-80 justify-center items-center mx-auto relative w-full max-w-2xl rounded-lg overflow-hidden border">
                     <PanoramaViewer imageUrl={previewUrl} />
                     <Button
                       type="button"
@@ -336,9 +298,9 @@ const RoomCreate = ({ rooms,room_types }: Props) => {
                   </div>
                 ) : (
                   // ✅ Show upload UI + URL input
-                  <div className="flex flex-col items-center gap-4 w-full">
+                  <div className="flex flex-col items-center gap-6 w-full">
                     <div
-                      className="relative w-150 h-80 rounded-lg border border-dashed border-neutral-400 flex flex-col justify-center items-center text-muted-foreground"
+                      className="relative h-60 w-full max-w-2xl md-h-80 rounded-lg border border-dashed border-neutral-400 flex flex-col justify-center items-center text-muted-foreground"
                       onDrop={handle360FileDrop}
                       onDragOver={(e) => e.preventDefault()}
                     >
@@ -361,7 +323,7 @@ const RoomCreate = ({ rooms,room_types }: Props) => {
                       </button>
                     </div>
 
-                    <div className="flex w-150 gap-2 items-center">
+                    <div className="h-20 flex w-full max-w-2xl gap-2 items-center">
                       <Input
                         type="text"
                         placeholder="Or enter a 360 image URL..."
@@ -377,13 +339,13 @@ const RoomCreate = ({ rooms,room_types }: Props) => {
               </div>
             </div>
 
-            <div className='w-full flex flex-col gap-2 p-2'>
+            <div className='w-full flex flex-col gap-2 px-4'>
               <div className='flex items-center gap-2 mb-2'>
                 <ImagePlus className='text-muted-foreground' size={14} />
                 <div className='text-sm font-bold'>Room Images:</div>
               </div>
-              <div className='h-100 w-full px-2 flex flex-col items-center justify-center gap-6'>
-                <div className="relative w-150 h-full rounded-lg border border-dashed border-neutral-400 flex flex-col justify-center items-center text-muted-foreground"
+              <div className='w-full px-2 flex flex-col items-center justify-center gap-6'>
+                <div className="h-60 relative w-full max-w-2xl md-h-full rounded-lg border border-dashed border-neutral-400 flex flex-col justify-center items-center text-muted-foreground"
                   onDrop={handleFileDrop}
                   onDragOver={(e) => e.preventDefault()} // Important: allows drop
                 >
@@ -407,7 +369,7 @@ const RoomCreate = ({ rooms,room_types }: Props) => {
                   </button>
                 </div>
 
-                <div className="h-50 w-150 overflow-x-auto bg-neutral-100 rounded-lg dark:bg-neutral-900">
+                <div className="h-20 w-full max-w-2xl overflow-x-auto bg-neutral-100 rounded-lg dark:bg-neutral-900">
                   <div className="flex h-full space-x-4 pr-4">
                     {data.images.length > 0 ? (
                       data.images.map((file, index) => (

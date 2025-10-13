@@ -20,7 +20,7 @@ class RoomController extends Controller
      */
     public function index()
     {
-        $rooms = Room::with(['roomType', 'fileAttachments'])
+        $rooms = Room::with(['fileAttachments'])
             ->select('rooms.*')
             ->get()
             ->map(function ($room) {
@@ -29,14 +29,14 @@ class RoomController extends Controller
                     ->where('is_360', false)
                     ->first();
 
+                $imagePath = $normalImage ? $normalImage->file_path : null;
+
                 return [
                     'id' => $room->id,
-                    'room_number' => $room->room_number,
-                    'room_type_name' => $room->roomType->name ?? 'N/A',
-                    'status' => $room->status,
+                    'name' => $room->name,
                     'price' => $room->price,
                     'capacity' => $room->capacity,
-                    'image' => $normalImage ? asset('storage/' . $normalImage->file_path) : null,
+                    'image' => $imagePath ,
                 ];
             });
 
@@ -50,12 +50,7 @@ class RoomController extends Controller
      */
     public function create()
     {
-        // room type list for dropdown
-        $room_types = RoomType::all(['id', 'name']);
-
-        return inertia('admin/rooms/create', [
-            'room_types' => $room_types
-        ]);
+        return inertia('admin/rooms/create');
     }
 
     /**
@@ -86,31 +81,32 @@ class RoomController extends Controller
      */
     public function show(Room $room)
     {
-        $room->load(['roomType', 'fileAttachments']);
+        $room->load(['fileAttachments']);
 
-        // Separate normal and 360 images for convenience
+        // Helper to return correct image URL (local or external)
+        $mapToImageUrl = fn($path) => filter_var($path, FILTER_VALIDATE_URL)
+            ? $path
+            : asset('storage/' . $path);
+
+        // Separate normal and 360 images
         $normalImages = $room->fileAttachments
             ->where('is_360', false)
             ->pluck('file_path')
-            ->map(fn($path) => asset('storage/' . $path))
+            ->map($mapToImageUrl)
             ->values();
 
         $image360 = $room->fileAttachments
             ->where('is_360', true)
             ->pluck('file_path')
-            ->map(fn($path) => asset('storage/' . $path))
+            ->map($mapToImageUrl)
             ->values();
-
-        //dd($normalImages, $image360);
 
         return inertia('admin/rooms/show', [
             'room' => [
                 'id' => $room->id,
-                'room_number' => $room->room_number,
-                'status' => $room->status,
-                'price' => $room->price,
+                'name' => $room->name,
                 'capacity' => $room->capacity,
-                'room_type' => $room->roomType->name ?? 'N/A',
+                'price' => $room->price,
                 'images' => $normalImages,
                 'image_360' => $image360->first(),
             ],
