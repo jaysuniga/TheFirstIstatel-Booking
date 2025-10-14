@@ -68,7 +68,7 @@ type Props = {
   users: User[];
 }
 
-const BookingCreate = ({ rooms,users }: Props) => {
+const BookingCreate = ({ rooms }: Props) => {
 
   const getDefaultFormData = (): BookingFormData => {
     const today = new Date()
@@ -101,7 +101,7 @@ const BookingCreate = ({ rooms,users }: Props) => {
       total_amount: 0,
     }
   }
-  const { data, setData, post, processing, errors, reset } = useForm<BookingFormData>(
+  const { data, setData, post, processing, errors} = useForm<BookingFormData>(
     getDefaultFormData()
   );
 
